@@ -12,7 +12,12 @@ type PostCardProps = {
 const PostCard = ({ post }: PostCardProps) => {
   const { user } = useUserContext();
 
-  if (!post.creator) return;
+  if (!post.creator) return null;
+
+  // If post.imageUrl exists, modify the URL to use /view instead of /preview.
+  const imageUrl = post.imageUrl
+    ? post.imageUrl.replace("/preview", "/view")
+    : "/assets/icons/profile-placeholder.svg";
 
   return (
     <div className="post-card">
@@ -34,7 +39,7 @@ const PostCard = ({ post }: PostCardProps) => {
               {post.creator.name}
             </p>
             <div className="flex-center gap-2 text-light-3">
-              <p className="subtle-semibold lg:small-regular ">
+              <p className="subtle-semibold lg:small-regular">
                 {multiFormatDateString(post.$createdAt)}
               </p>
               •
@@ -47,7 +52,8 @@ const PostCard = ({ post }: PostCardProps) => {
 
         <Link
           to={`/update-post/${post.$id}`}
-          className={`${user.id !== post.creator.$id && "hidden"}`}>
+          className={`${user.id !== post.creator.$id && "hidden"}`}
+        >
           <img
             src={"/assets/icons/edit.svg"}
             alt="edit"
@@ -61,7 +67,7 @@ const PostCard = ({ post }: PostCardProps) => {
         <div className="small-medium lg:base-medium py-5">
           <p>{post.caption}</p>
           <ul className="flex gap-1 mt-2">
-            {post.tags.map((tag: string, index: string) => (
+            {post.tags.map((tag: string, index: number) => (
               <li key={`${tag}${index}`} className="text-light-3 small-regular">
                 #{tag}
               </li>
@@ -70,7 +76,7 @@ const PostCard = ({ post }: PostCardProps) => {
         </div>
 
         <img
-          src={post.imageUrl || "/assets/icons/profile-placeholder.svg"}
+          src={imageUrl}
           alt="post image"
           className="post-card_img"
         />
